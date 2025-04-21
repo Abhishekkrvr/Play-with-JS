@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live CSS Playground</title>
+  <style>
+    /* Reset some default styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #a2a0a0;
+    }
+
+    .container {
+      display: flex;
+      justify-content: space-between;
+      width: 90%;
+      max-width: 1200px;
+    }
+
+    .editor, .preview {
+      width: 48%;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 300px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 1rem;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #f9f9f9;
+      resize: none;
+    }
+
+    #preview-box {
+      width: 100%;
+      height: 200px;
+      background-color: #eeeeee;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      border-radius: 8px;
+    }
+
+    #preview-box p {
+      font-size: 1.2rem;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="editor">
+      <h2>Edit CSS</h2>
+      <textarea id="css-editor" placeholder="Edit your CSS here..."></textarea>
+    </div>
+    <div class="preview">
+      <h2>Live Preview</h2>
+      <div id="preview-box">
+        <p>Change my styles using CSS!</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Select the textarea and preview box elements
+    const cssEditor = document.getElementById('css-editor');
+    const previewBox = document.getElementById('preview-box');
+
+    // Listen for input in the CSS editor
+    cssEditor.addEventListener('input', function() {
+      // Get the CSS entered by the user
+      const cssText = cssEditor.value;
+
+      // Apply the entered CSS to the preview box
+      previewBox.style = cssText;
+    });
+  </script>
+</body>
+</html>

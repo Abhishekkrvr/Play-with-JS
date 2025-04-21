@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customizable Music Player</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #181818;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      flex-direction: column;
+    }
+
+    h1 {
+      color: #fff;
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+
+    .music-player {
+      background-color: #222;
+      padding: 30px;
+      border-radius: 15px;
+      width: 450px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
+      text-align: center;
+      position: relative;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    .controls button {
+      background-color: #444;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      width: 60px;
+      height: 60px;
+    }
+
+    .controls button:hover {
+      background-color: #ff6347;
+      transform: scale(1.1);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background-color: #444;
+      border-radius: 5px;
+      margin-top: 15px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .progress-bar .progress {
+      height: 100%;
+      background-color: #ff6347;
+      width: 0%;
+      border-radius: 5px;
+      transition: width 0.5s ease;
+    }
+
+    .volume-control, .speed-control {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .volume-control label, .speed-control label {
+      margin-right: 15px;
+    }
+
+    .volume-control input, .speed-control select {
+      width: 70%;
+      margin: 5px;
+      background-color: #444;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      color: #fff;
+    }
+
+    .theme-selector {
+      margin-top: 25px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .theme-selector button {
+      margin: 0 10px;
+      padding: 10px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #444;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .theme-selector button:hover {
+      background-color: #ff6347;
+    }
+
+    .theme-selector button.active {
+      background-color: #ff6347;
+    }
+
+    .file-input {
+      margin-top: 20px;
+      color: #fff;
+      background-color: #444;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .file-input:hover {
+      background-color: #ff6347;
+    }
+
+    /* Light Theme */
+    .light-theme {
+      background-color: #f0f0f0;
+    }
+
+    .light-theme .music-player {
+      background-color: #fff;
+      color: #000;
+    }
+
+    .light-theme .controls button {
+      background-color: #ddd;
+      color: #000;
+    }
+
+    .light-theme .progress-bar {
+      background-color: #ddd;
+    }
+
+    .light-theme .progress-bar .progress {
+      background-color: #ff6347;
+    }
+
+    .light-theme .volume-control input, .light-theme .speed-control select {
+      background-color: #ddd;
+      color: #000;
+    }
+
+    .light-theme .theme-selector button {
+      background-color: #ddd;
+      color: #000;
+    }
+
+  </style>
+</head>
+<body>
+
+<h1>Andy</h1>
+
+<div class="music-player">
+  <div class="theme-selector">
+    <button onclick="changeTheme('dark')" class="active">Dark Theme</button>
+    <button onclick="changeTheme('light')">Light Theme</button>
+  </div>
+
+  <div class="controls">
+    <button onclick="prevTrack()">❮</button>
+    <button onclick="playPause()">⏸️</button>
+    <button onclick="nextTrack()">❯</button>
+  </div>
+
+  <div class="progress-bar" onclick="seek(event)">
+    <div class="progress"></div>
+  </div>
+
+  <div class="volume-control">
+    <label for="volume">Volume:</label>
+    <input type="range" id="volume" min="0" max="1" step="0.01" value="1" onchange="changeVolume(this)">
+  </div>
+
+  <div class="speed-control">
+    <label for="speed">Speed:</label>
+    <select id="speed" onchange="changeSpeed(this)">
+      <option value="1">1x</option>
+      <option value="0.5">0.5x</option>
+      <option value="1.5">1.5x</option>
+      <option value="2">2x</option>
+    </select>
+  </div>
+
+  <input type="file" id="fileInput" accept="audio/*" onchange="loadSong(event)" class="file-input">
+
+</div>
+
+<script>
+  let audio = new Audio();
+  let isPlaying = false;
+  let currentTrackIndex = 0;
+  const songs = [];
+
+  function loadSong(event) {
+    const file = event.target.files[0];
+    if (file) {
+      songs.push(URL.createObjectURL(file));
+      audio.src = songs[currentTrackIndex];
+      audio.load();
+      playPause();
+    }
+  }
+
+  function playPause() {
+    if (isPlaying) {
+      audio.pause();
+      isPlaying = false;
+      document.querySelector('.controls button:nth-child(2)').textContent = '⏸️';
+    } else {
+      audio.play();
+      isPlaying = true;
+      document.querySelector('.controls button:nth-child(2)').textContent = '⏵';
+    }
+  }
+
+  function prevTrack() {
+    currentTrackIndex = (currentTrackIndex - 1 + songs.length) % songs.length;
+    audio.src = songs[currentTrackIndex];
+    audio.play();
+    isPlaying = true;
+  }
+
+  function nextTrack() {
+    currentTrackIndex = (currentTrackIndex + 1) % songs.length;
+    audio.src = songs[currentTrackIndex];
+    audio.play();
+    isPlaying = true;
+  }
+
+  function seek(event) {
+    const progressBar = event.currentTarget;
+    const clickPosition = (event.clientX - progressBar.offsetLeft) / progressBar.offsetWidth;
+    audio.currentTime = clickPosition * audio.duration;
+  }
+
+  function updateProgress() {
+    const progress = (audio.currentTime / audio.duration) * 100;
+    document.querySelector('.progress').style.width = progress + '%';
+  }
+
+  function changeVolume(input) {
+    audio.volume = input.value;
+  }
+
+  function changeSpeed(select) {
+    audio.playbackRate = parseFloat(select.value);
+  }
+
+  function changeTheme(theme) {
+    document.body.className = theme + '-theme';
+    const buttons = document.querySelectorAll('.theme-selector button');
+    buttons.forEach(button => button.classList.remove('active'));
+    event.target.classList.add('active');
+  }
+
+  audio.addEventListener('timeupdate', updateProgress);
+</script>
+
+</body>
+</html>
